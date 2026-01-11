@@ -62,7 +62,7 @@ async fn delay(duration: Duration) {
 
 /// Determines the shake duration. This is the duration between the first falling edges of the
 /// pulse trains generated when the shake sensor activates (you can hear its click sound).
-#[embassy_executor::task]
+#[esp_hal_embassy::main]
 async fn shake_period(mut sensor: Input<'static>, signal: &'static DurationSignal) {
     let debounce_delay = Duration::from_millis(150);
     let mut history = HistoryBuffer::<_, 6>::new();
@@ -130,7 +130,7 @@ async fn display_pattern_back_and_forth<'a>(
 
 static SHAKE_PERIOD_SIGNAL: DurationSignal = DurationSignal::new();
 
-#[esp_hal_embassy::main]
+#[esp_rtos::main]
 async fn main(spawner: Spawner) -> ! {
     // Initialize the board.
     let board = Board::init();

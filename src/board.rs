@@ -2,6 +2,7 @@
 
 use esp_hal::clock::CpuClock;
 use esp_hal::gpio::{DriveMode, Input, InputConfig, Level, Output, OutputConfig, Pull};
+use esp_hal::interrupt::software::SoftwareInterruptControl;
 use esp_hal::timer::systimer::SystemTimer;
 
 use crate::led::STOREY_LEDS;
@@ -35,8 +36,8 @@ impl<'a> Board<'a> {
         esp_alloc::heap_allocator!(size: 64 * 1024);
 
         let timer = SystemTimer::new(peripherals.SYSTIMER);
-        esp_hal_embassy::init(timer.alarm0);
-
+        let sw_int = SoftwareInterruptControl::new(peripherals.SW_INTERRUPT);
+        esp_rtos::start(timer.alarm0, sw_int.software_interrupt0);
         // Storey LEDs and the LED on the ESP32-C3 board are connected as follows: Current flows
         // from the power source (+) directly through the LED, a current limiting resistor, and
         // finally into a GPIO pin with its low-side switching transistor to GND (-).
